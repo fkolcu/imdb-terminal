@@ -10,11 +10,14 @@ func main() {
 	app := tview.NewApplication()
 
 	panel := internal.DrawPanel()
+	internal.ToggleFocus(app, panel)
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyEscape:
 			app.Stop()
+		case tcell.KeyTab:
+			internal.ToggleFocus(app, panel)
 		}
 		return event
 	})

@@ -6,11 +6,16 @@ import (
 	"github.com/rivo/tview"
 )
 
+type Tab interface {
+	tview.Primitive
+	SetBorderColor(color tcell.Color) *tview.Box
+}
+
 type Panel struct {
 	Grid *tview.Grid
-	Tab1 tview.Primitive
-	Tab2 tview.Primitive
-	Tab3 tview.Primitive
+	Tab1 Tab
+	Tab2 Tab
+	Tab3 Tab
 }
 
 func buildSearch() *tview.InputField {
