@@ -2,15 +2,24 @@ package main
 
 import (
 	"github.com/fkolcu/imdb-terminal/internal"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
 func main() {
 	app := tview.NewApplication()
 
-	grid := internal.DrawPanel()
+	panel := internal.DrawPanel()
 
-	err := app.SetRoot(grid, true).Run()
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyEscape:
+			app.Stop()
+		}
+		return event
+	})
+
+	err := app.SetRoot(panel.Grid, true).Run()
 	if err != nil {
 		panic(err)
 	}
