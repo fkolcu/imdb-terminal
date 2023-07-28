@@ -18,7 +18,7 @@ type ListItem struct {
 func NewList(items []ListItem, config ListConfig) *tview.List {
 	myList := tview.NewList()
 
-	//myList.SetTitle(config.Title)
+	myList.SetTitle(config.Title)
 	myList.SetBorder(true)
 	myList.SetBorderColor(tcell.ColorDefault)
 	myList.SetSelectedFocusOnly(true)
