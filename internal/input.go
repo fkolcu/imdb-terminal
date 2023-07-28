@@ -7,6 +7,7 @@ import (
 
 type InputConfig struct {
 	Placeholder string
+	Border      bool
 }
 
 func NewInput(config InputConfig) *tview.InputField {
@@ -15,7 +16,7 @@ func NewInput(config InputConfig) *tview.InputField {
 	myInput.SetFieldBackgroundColor(tcell.ColorWhite)
 	myInput.SetFieldTextColor(tcell.ColorBlack)
 
-	myInput.SetBorder(true)
+	myInput.SetBorder(config.Border)
 	myInput.SetBorderColor(tcell.ColorDefault)
 
 	myInput.SetPlaceholder(config.Placeholder)
