@@ -42,7 +42,7 @@ func DrawPanel() *tview.Grid {
 	grid.SetBorders(true)
 
 	// Row 1 Column 1-2
-	grid.AddItem(buildSearch(), 0, 0, 1, 2, 0, 0, false)
+	grid.AddItem(buildSearch(), 0, 0, 1, 2, 0, 0, true)
 
 	// Row 2 Column 1
 	grid.AddItem(buildTitles([]ListItem{}), 1, 0, 1, 1, 0, 0, false)
