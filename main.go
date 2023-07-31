@@ -9,7 +9,7 @@ import (
 func main() {
 	app := tview.NewApplication()
 
-	panel := internal.DrawPanel()
+	panel := internal.DrawPanel(app)
 	internal.ToggleFocus(app, panel)
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {

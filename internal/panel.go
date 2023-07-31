@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"strings"
 )
+
+var app *tview.Application
+var grid *tview.Grid
 
 var tab1 *tview.InputField
 var tab2 *tview.List
@@ -24,7 +28,7 @@ type Panel struct {
 
 func buildSearch() *tview.InputField {
 	return NewInput(InputConfig{
-		Placeholder: "Search IMDb",
+		Placeholder: "Search IMDb (press <enter> to search)",
 		Border:      true,
 	})
 }
@@ -44,20 +48,21 @@ func buildPeople(people []ListItem) *tview.List {
 func buildFooter() *tview.TextView {
 	textView := tview.NewTextView()
 	textView.SetDynamicColors(true)
-	textView.SetBorder(true)
-	textView.SetBorderColor(tcell.ColorDefault)
-	fmt.Fprintf(textView, "%s", "[yellow]Press Tab to switch between tabs")
+	textView.SetBorderPadding(0, 0, 1, 1)
+	fmt.Fprintf(textView, "%s", "[blue]<esc>: Quit, <tab>: Jump between panels")
 	return textView
 }
 
-func DrawPanel() Panel {
-	grid := tview.NewGrid()
+func DrawPanel(application *tview.Application) Panel {
+	app = application
+
+	grid = tview.NewGrid()
 
 	// There are 3 rows and 2 columns
 	// First one will have 1 item
 	// Second one (at the middle) will have 2 items
 	// Last one will have 1 item
-	grid.SetRows(3, 0, 3)
+	grid.SetRows(3, 0, 1)
 	grid.SetColumns(-1, -1)
 
 	// Row 1 Column 1-2
@@ -89,7 +94,18 @@ func onSearched(key tcell.Key) {
 		tab2.Clear()
 		tab3.Clear()
 
-		textInput := tab1.GetText()
+		textInput := strings.TrimSpace(tab1.GetText())
+		if textInput == "" {
+			modal := NewModal(ModalConfig{
+				Text:       "You need to enter something",
+				ButtonType: ButtonOk,
+				EventOk: func() {
+					app.SetRoot(grid, true)
+				},
+			})
+			app.SetRoot(modal, false)
+		}
+
 		titles, people := SearchImdb(textInput)
 
 		// Since range doesn't guarantee the order, for loop is best here
