@@ -25,6 +25,11 @@ var currentItemType string
 // SearchImdb searches IMDb using the searchText you give it and
 // returns the list of Titles and People
 func SearchImdb(searchText string) (map[int]ImdbItem, map[int]ImdbItem) {
+	searchText = strings.TrimSpace(searchText)
+	if searchText == "" {
+		return map[int]ImdbItem{}, map[int]ImdbItem{}
+	}
+
 	htmlTree := readImdb(searchText)
 	traverseTree(htmlTree)
 
