@@ -14,6 +14,9 @@ var tab1 *tview.InputField
 var tab2 *tview.List
 var tab3 *tview.List
 
+var titleUrls []string
+var peopleUrls []string
+
 type Tab interface {
 	tview.Primitive
 	SetBorderColor(color tcell.Color) *tview.Box
@@ -110,10 +113,12 @@ func onSearched(key tcell.Key) {
 
 		// Since range doesn't guarantee the order, for loop is best here
 		for index := 0; index < len(titles); index++ {
+			titleUrls = append(titleUrls, titles[index].Url)
 			tab2.AddItem(titles[index].Name, titles[index].Summary, rune('0'+index), nil)
 		}
 
 		for index := 0; index < len(people); index++ {
+			peopleUrls = append(peopleUrls, people[index].Url)
 			tab3.AddItem(people[index].Name, people[index].Summary, rune('0'+index), nil)
 		}
 	}
