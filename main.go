@@ -9,20 +9,20 @@ import (
 func main() {
 	app := tview.NewApplication()
 
-	panel := internal.DrawPanel(app)
-	internal.ToggleFocus(app, panel)
+	imdbCli := internal.NewCli(app)
+	internal.ToggleFocus(app, imdbCli.MainPanel)
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyEscape:
 			app.Stop()
 		case tcell.KeyTab:
-			internal.ToggleFocus(app, panel)
+			internal.ToggleFocus(app, imdbCli.MainPanel)
 		}
 		return event
 	})
 
-	err := app.SetRoot(panel.Grid, true).Run()
+	err := app.SetRoot(imdbCli.MainPage, true).Run()
 	if err != nil {
 		panic(err)
 	}

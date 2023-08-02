@@ -1,33 +1,35 @@
 package internal
 
 import (
+	"github.com/fkolcu/imdb-terminal/internal/panel"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
-var currentTab = 0
+func ToggleFocus(app *tview.Application, panel panel.Panel) {
+	tabs := panel.GetTabs()
+	lastTabIndex := len(tabs) - 1
 
-func ToggleFocus(app *tview.Application, panel Panel) {
-	switch currentTab {
-	case 0:
-		fallthrough
-	case 3:
-		app.SetFocus(panel.Tab1)
-		panel.Tab1.SetBorderColor(tcell.ColorRed)
-		panel.Tab2.SetBorderColor(tcell.ColorDefault)
-		panel.Tab3.SetBorderColor(tcell.ColorDefault)
-		currentTab = 1
-	case 1:
-		app.SetFocus(panel.Tab2)
-		panel.Tab2.SetBorderColor(tcell.ColorRed)
-		panel.Tab1.SetBorderColor(tcell.ColorDefault)
-		panel.Tab3.SetBorderColor(tcell.ColorDefault)
-		currentTab = 2
-	case 2:
-		app.SetFocus(panel.Tab3)
-		panel.Tab3.SetBorderColor(tcell.ColorRed)
-		panel.Tab1.SetBorderColor(tcell.ColorDefault)
-		panel.Tab2.SetBorderColor(tcell.ColorDefault)
-		currentTab = 3
+	var focused = false
+	for i := 0; i < len(tabs); i++ {
+		if tabs[i].Tab.HasFocus() {
+			if i == lastTabIndex {
+				app.SetFocus(tabs[0].Tab)
+				tabs[0].Tab.SetBorderColor(tcell.ColorRed)
+			} else {
+				app.SetFocus(tabs[i+1].Tab)
+				tabs[i+1].Tab.SetBorderColor(tcell.ColorRed)
+			}
+
+			tabs[i].Tab.SetBorderColor(tcell.ColorDefault)
+
+			focused = true
+			break
+		}
+	}
+
+	if focused == false {
+		app.SetFocus(tabs[0].Tab)
+		tabs[0].Tab.SetBorderColor(tcell.ColorRed)
 	}
 }

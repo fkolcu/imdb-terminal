@@ -1,4 +1,4 @@
-package internal
+package view
 
 import "github.com/rivo/tview"
 
