@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/fkolcu/imdb-terminal/internal/panel"
+	"github.com/fkolcu/imdb-terminal/internal/scraping"
 	"github.com/fkolcu/imdb-terminal/internal/view"
 	"github.com/rivo/tview"
 	"strings"
@@ -48,7 +49,7 @@ func onSearch(searchInput *tview.InputField, titleList *tview.List, personList *
 		return
 	}
 
-	titles, people := SearchImdb(textInput)
+	titles, people := scraping.SearchImdb(textInput)
 
 	// Since range doesn't guarantee the order, for loop is best here
 	for index := 0; index < len(titles); index++ {
