@@ -28,6 +28,7 @@ type TabProperty struct {
 	MinPanelHeight int
 	MinPanelWidth  int
 	Focus          bool
+	Focusable      bool
 }
 
 type Attributes struct {

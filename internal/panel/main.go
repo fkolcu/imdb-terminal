@@ -37,32 +37,36 @@ func (m MainPanel) getTabs() []PanelTab {
 		Border:      true,
 	})
 	searchInput.SetDoneFunc(func(key tcell.Key) {
+		if key != tcell.KeyEnter {
+			return
+		}
+
 		titleList.Clear()
 		personList.Clear()
 
 		m.OnInputDone(searchInput, titleList, personList)
 	})
-	searchInputProperty := TabProperty{0, 0, 1, 2, 0, 0, true}
+	searchInputProperty := TabProperty{0, 0, 1, 2, 0, 0, true, true}
 	searchInputTab := PanelTab{searchInput, searchInputProperty}
 
 	// Tab 2: Title List
 	titleList = view.NewList([]view.ListItem{}, view.ListConfig{
 		Title: "Titles",
 	})
-	titleListProperty := TabProperty{1, 0, 1, 1, 0, 0, false}
+	titleListProperty := TabProperty{1, 0, 1, 1, 0, 0, false, true}
 	titleListTab := PanelTab{titleList, titleListProperty}
 
 	// Tab 3: Person list
 	personList = view.NewList([]view.ListItem{}, view.ListConfig{
 		Title: "People",
 	})
-	personListProperty := TabProperty{1, 1, 1, 1, 0, 0, false}
+	personListProperty := TabProperty{1, 1, 1, 1, 0, 0, false, true}
 	personListTab := PanelTab{personList, personListProperty}
 
 	// Tab 4: Footer
 	keybindingText := view.NewText(view.TextConfig{DynamicColors: true, Padding: view.TextPadding{Left: 1, Right: 1}})
 	keybindingText.SetText("[blue]<esc>: Quit, <tab>: Jump between panels")
-	keybindingTextProperty := TabProperty{2, 0, 1, 2, 0, 0, false}
+	keybindingTextProperty := TabProperty{2, 0, 1, 2, 0, 0, false, false}
 	keybindingTextTab := PanelTab{keybindingText, keybindingTextProperty}
 
 	return []PanelTab{searchInputTab, titleListTab, personListTab, keybindingTextTab}

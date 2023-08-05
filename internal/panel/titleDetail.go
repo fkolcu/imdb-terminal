@@ -28,7 +28,7 @@ func (t TitleDetailPanel) getTabs() []PanelTab {
 	// Tab 1 : Poster
 	emptyImage := util.RetrieveEmptyImage()
 	image := view.NewImage(emptyImage)
-	imageProperty := TabProperty{0, 0, 1, 1, 0, 0, false}
+	imageProperty := TabProperty{0, 0, 1, 1, 0, 0, false, false}
 	imageTab := PanelTab{image, imageProperty}
 
 	// Tab 2: Info
@@ -46,7 +46,7 @@ func (t TitleDetailPanel) getTabs() []PanelTab {
 	descriptionText := view.NewText(view.TextConfig{}).SetText("This is the description of the title.")
 	flex.AddItem(descriptionText, 0, 1, false)
 
-	flexProperty := TabProperty{0, 0, 1, 1, 0, 0, false}
+	flexProperty := TabProperty{0, 0, 1, 1, 0, 0, false, false}
 	flexTab := PanelTab{flex, flexProperty}
 
 	return []PanelTab{imageTab, flexTab}
