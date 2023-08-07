@@ -6,11 +6,15 @@ import (
 	"github.com/rivo/tview"
 )
 
-type MainPanel struct {
-	OnInputDone func(searchInput *tview.InputField, titleList *tview.List, personList *tview.List)
-}
+var mainTabs []PanelTab
+var titleList *tview.List
+var personList *tview.List
 
-var tabs []PanelTab
+type MainPanel struct {
+	OnInputDone      func(searchInput *tview.InputField, titleList *tview.List, personList *tview.List)
+	OnTitleSelected  func(selectedIndex int)
+	OnPersonSelected func(selectedIndex int)
+}
 
 func (m MainPanel) GetAttributes() Attributes {
 	return Attributes{
@@ -18,19 +22,7 @@ func (m MainPanel) GetAttributes() Attributes {
 		Columns: []int{-1, -1},
 	}
 }
-
-func (m MainPanel) GetTabs() []PanelTab {
-	if len(tabs) == 0 {
-		tabs = m.getTabs()
-	}
-
-	return tabs
-}
-
-var titleList *tview.List
-var personList *tview.List
-
-func (m MainPanel) getTabs() []PanelTab {
+func (m MainPanel) InitializeTabs() []PanelTab {
 	// Tab 1: Search Input
 	searchInput := view.NewInput(view.InputConfig{
 		Placeholder: "Search IMDb (press <enter> to search)",
@@ -53,12 +45,18 @@ func (m MainPanel) getTabs() []PanelTab {
 	titleList = view.NewList([]view.ListItem{}, view.ListConfig{
 		Title: "Titles",
 	})
+	titleList.SetSelectedFunc(func(i int, s string, s2 string, r rune) {
+		m.OnTitleSelected(i)
+	})
 	titleListProperty := TabProperty{1, 0, 1, 1, 0, 0, false, true}
 	titleListTab := PanelTab{titleList, titleListProperty}
 
 	// Tab 3: Person list
 	personList = view.NewList([]view.ListItem{}, view.ListConfig{
 		Title: "People",
+	})
+	personList.SetSelectedFunc(func(i int, s string, s2 string, r rune) {
+		m.OnPersonSelected(i)
 	})
 	personListProperty := TabProperty{1, 1, 1, 1, 0, 0, false, true}
 	personListTab := PanelTab{personList, personListProperty}
@@ -69,5 +67,14 @@ func (m MainPanel) getTabs() []PanelTab {
 	keybindingTextProperty := TabProperty{2, 0, 1, 2, 0, 0, false, false}
 	keybindingTextTab := PanelTab{keybindingText, keybindingTextProperty}
 
-	return []PanelTab{searchInputTab, titleListTab, personListTab, keybindingTextTab}
+	mainTabs = []PanelTab{searchInputTab, titleListTab, personListTab, keybindingTextTab}
+	return mainTabs
+}
+
+func (m MainPanel) GetTabs() []PanelTab {
+	if len(mainTabs) == 0 {
+		m.InitializeTabs()
+	}
+
+	return mainTabs
 }

@@ -99,7 +99,14 @@ func resolveItems(node *html.Node, itemToResolve ItemResolvingAttribute) {
 	for _, attr := range node.Attr {
 		if attr.Key == "class" && strings.Contains(attr.Val, itemToResolve.Class) {
 			child := node.FirstChild
-			data := child.Data
+
+			var data string
+			if child != nil {
+				data = child.Data
+			} else {
+				data = node.Data
+			}
+
 			itemToResolve.OnFound(node, data)
 		}
 	}

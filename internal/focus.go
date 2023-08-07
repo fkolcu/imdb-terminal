@@ -4,20 +4,28 @@ import (
 	"fmt"
 	"github.com/fkolcu/imdb-terminal/internal/panel"
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
 )
 
-func ToggleFocus(app *tview.Application, panel panel.Panel) {
-	tabs := panel.GetTabs()
+func ToggleFocus(global *AppGlobal) {
+	activePanel := global.ActivePanel
+	tabs := activePanel.GetTabs()
+
+	var firstFocusableTabFound bool
+	var firstFocusableTab panel.PanelTab
 
 	for i := 0; i < len(tabs); i++ {
+		if firstFocusableTabFound == false && tabs[i].Property.Focusable {
+			firstFocusableTabFound = true
+			firstFocusableTab = tabs[i]
+		}
+
 		if tabs[i].Tab.HasFocus() {
 			tabs[i].Tab.SetBorderColor(tcell.ColorDefault)
 
 			focusableTab, err := findFocusableTab(tabs, i+1)
 			if err == nil {
 				focusableTab.Tab.SetBorderColor(tcell.ColorRed)
-				app.SetFocus(focusableTab.Tab)
+				global.CliUiApp.SetFocus(focusableTab.Tab)
 				return
 			}
 
@@ -25,8 +33,8 @@ func ToggleFocus(app *tview.Application, panel panel.Panel) {
 		}
 	}
 
-	app.SetFocus(tabs[0].Tab)
-	tabs[0].Tab.SetBorderColor(tcell.ColorRed)
+	global.CliUiApp.SetFocus(firstFocusableTab.Tab)
+	firstFocusableTab.Tab.SetBorderColor(tcell.ColorRed)
 }
 
 func findFocusableTab(tabs []panel.PanelTab, startIndex int) (panel.PanelTab, error) {

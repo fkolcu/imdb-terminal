@@ -9,15 +9,19 @@ import (
 func main() {
 	app := tview.NewApplication()
 
-	imdbCli := internal.NewCli(app)
-	internal.ToggleFocus(app, imdbCli.MainPanel)
+	appGlobal := &internal.AppGlobal{
+		CliUiApp: app,
+	}
+
+	imdbCli := internal.NewCli(appGlobal)
+	internal.ToggleFocus(appGlobal)
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyEscape:
 			app.Stop()
 		case tcell.KeyTab:
-			internal.ToggleFocus(app, imdbCli.MainPanel)
+			internal.ToggleFocus(appGlobal)
 		}
 		return event
 	})

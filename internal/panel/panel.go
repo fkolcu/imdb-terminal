@@ -7,6 +7,7 @@ import (
 
 type Panel interface {
 	GetAttributes() Attributes
+	InitializeTabs() []PanelTab
 	GetTabs() []PanelTab
 }
 

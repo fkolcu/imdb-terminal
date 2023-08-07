@@ -1,53 +1,92 @@
 package panel
 
 import (
-	"github.com/fkolcu/imdb-terminal/internal/util"
 	"github.com/fkolcu/imdb-terminal/internal/view"
 	"github.com/rivo/tview"
 )
 
+var titleDetailTabs []PanelTab
+
 type TitleDetailPanel struct {
+	TitleName         string
+	TitlePoster       string
+	TitleDetail       string
+	TitleGenre        string
+	TitleDescription  string
+	TitleUrl          string
+	OnGoBackSelected  func()
+	OnSeeImdbSelected func(url string)
 }
 
 func (t TitleDetailPanel) GetAttributes() Attributes {
 	return Attributes{
-		Rows:    []int{0, 0},
-		Columns: []int{-1, -1},
+		Rows:    []int{0, 0, 3, 1},
+		Columns: []int{-1, -1, -1, -1},
 	}
 }
 
-func (t TitleDetailPanel) GetTabs() []PanelTab {
-	if len(tabs) == 0 {
-		tabs = t.getTabs()
-	}
-
-	return tabs
-}
-
-func (t TitleDetailPanel) getTabs() []PanelTab {
+func (t TitleDetailPanel) InitializeTabs() []PanelTab {
 	// Tab 1 : Poster
-	emptyImage := util.RetrieveEmptyImage()
-	image := view.NewImage(emptyImage)
-	imageProperty := TabProperty{0, 0, 1, 1, 0, 0, false, false}
+	//emptyImage := util.RetrieveEmptyImage()
+	image := view.NewImage(t.TitlePoster)
+	imageProperty := TabProperty{0, 0, 3, 2, 0, 0, false, false}
 	imageTab := PanelTab{image, imageProperty}
 
 	// Tab 2: Info
 	flex := tview.NewFlex()
+	flex.SetDirection(tview.FlexRow)
 
-	titleText := view.NewText(view.TextConfig{}).SetText("Title")
+	titleText := view.NewText(view.TextConfig{}).SetText(t.TitleName)
 	flex.AddItem(titleText, 0, 1, false)
 
-	detailText := view.NewText(view.TextConfig{}).SetText("2023 - PG-13 - 1h 55m")
+	detailText := view.NewText(view.TextConfig{}).SetText(t.TitleDetail)
 	flex.AddItem(detailText, 0, 1, false)
 
-	genreText := view.NewText(view.TextConfig{}).SetText("Genre1 | Genre2")
+	genreText := view.NewText(view.TextConfig{}).SetText(t.TitleGenre)
 	flex.AddItem(genreText, 0, 1, false)
 
-	descriptionText := view.NewText(view.TextConfig{}).SetText("This is the description of the title.")
+	descriptionText := view.NewText(view.TextConfig{}).SetText(t.TitleDescription)
 	flex.AddItem(descriptionText, 0, 1, false)
 
-	flexProperty := TabProperty{0, 0, 1, 1, 0, 0, false, false}
+	flexProperty := TabProperty{0, 2, 2, 2, 0, 0, false, false}
 	flexTab := PanelTab{flex, flexProperty}
 
-	return []PanelTab{imageTab, flexTab}
+	// Tab 3 : Back Button
+	backButton := view.NewButton(view.ButtonConfig{
+		Label: "Go Back",
+		OnSelected: func() {
+			// descriptionText.SetText("Go Back Selected")
+			t.OnGoBackSelected()
+		},
+	})
+	backButtonProperty := TabProperty{2, 2, 1, 1, 0, 0, false, true}
+	backButtonTab := PanelTab{backButton, backButtonProperty}
+
+	// Tab 4 : Link Button
+	linkButton := view.NewButton(view.ButtonConfig{
+		Label: "See on IMDb",
+		OnSelected: func() {
+			// descriptionText.SetText("See On IMDb Selected")
+			t.OnSeeImdbSelected(t.TitleUrl)
+		},
+	})
+	linkButtonProperty := TabProperty{2, 3, 1, 1, 0, 0, false, true}
+	linkButtonTab := PanelTab{linkButton, linkButtonProperty}
+
+	// Tab 5: Footer
+	keybindingText := view.NewText(view.TextConfig{DynamicColors: true, Padding: view.TextPadding{Left: 1, Right: 1}})
+	keybindingText.SetText("[blue]<esc>: Quit, <tab>: Jump between buttons, <enter>: Select button")
+	keybindingTextProperty := TabProperty{3, 0, 1, 4, 0, 0, false, false}
+	keybindingTextTab := PanelTab{keybindingText, keybindingTextProperty}
+
+	titleDetailTabs = []PanelTab{imageTab, flexTab, backButtonTab, linkButtonTab, keybindingTextTab}
+	return titleDetailTabs
+}
+
+func (t TitleDetailPanel) GetTabs() []PanelTab {
+	if len(titleDetailTabs) == 0 {
+		t.InitializeTabs()
+	}
+
+	return titleDetailTabs
 }

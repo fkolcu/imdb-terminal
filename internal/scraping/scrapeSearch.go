@@ -65,6 +65,7 @@ func onItemFound(node *html.Node, data string) {
 	for _, attr := range node.Attr {
 		if attr.Key == "href" {
 			item.Url = "https://www.imdb.com" + attr.Val
+			break
 		}
 	}
 
