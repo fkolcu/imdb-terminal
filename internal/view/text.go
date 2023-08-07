@@ -20,5 +20,6 @@ func NewText(config TextConfig) *tview.TextView {
 	myText := tview.NewTextView()
 	myText.SetDynamicColors(config.DynamicColors)
 	myText.SetBorderPadding(config.Padding.Top, config.Padding.Bottom, config.Padding.Left, config.Padding.Right)
+	myText.SetWordWrap(true)
 	return myText
 }
