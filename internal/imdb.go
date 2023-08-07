@@ -109,6 +109,7 @@ func onImdbButtonSelected(url string) {
 }
 
 func onGoBackButtonSelected() {
+	FocusOn(mainPanel, global)
 	global.ActivePanel = mainPanel
 	global.CliUiApp.SetRoot(mainPage, true)
 }

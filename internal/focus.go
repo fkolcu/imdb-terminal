@@ -37,6 +37,21 @@ func ToggleFocus(global *AppGlobal) {
 	firstFocusableTab.Tab.SetBorderColor(tcell.ColorRed)
 }
 
+func FocusOn(p panel.Panel, global *AppGlobal) {
+	firstFocusableTabFound := false
+
+	tabs := p.GetTabs()
+	for i := 0; i < len(tabs); i++ {
+		if firstFocusableTabFound == false && tabs[i].Property.Focusable {
+			tabs[i].Tab.SetBorderColor(tcell.ColorRed)
+			global.CliUiApp.SetFocus(tabs[i].Tab)
+			firstFocusableTabFound = true
+		} else {
+			tabs[i].Tab.SetBorderColor(tcell.ColorDefault)
+		}
+	}
+}
+
 func findFocusableTab(tabs []panel.PanelTab, startIndex int) (panel.PanelTab, error) {
 	maxIndex := len(tabs) - 1
 	if startIndex > maxIndex {
