@@ -22,6 +22,9 @@ func NewList(items []ListItem, config ListConfig) *tview.List {
 	myList.SetBorder(true)
 	myList.SetBorderColor(tcell.ColorDefault)
 	myList.SetSelectedFocusOnly(true)
+	myList.SetFocusFunc(func() {
+		myList.SetCurrentItem(myList.GetCurrentItem() - 1)
+	})
 
 	for index, item := range items {
 		myList.AddItem(item.MainText, item.SecondaryText, rune('0'+index), nil)
