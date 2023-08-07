@@ -38,12 +38,15 @@ func (t TitleDetailPanel) InitializeTabs() []PanelTab {
 
 	titleText := view.NewText(view.TextConfig{}).SetText(t.TitleName)
 	flex.AddItem(titleText, 0, 1, false)
+	flex.ResizeItem(titleText, 1, 1)
 
 	detailText := view.NewText(view.TextConfig{}).SetText(t.TitleDetail)
 	flex.AddItem(detailText, 0, 1, false)
+	flex.ResizeItem(detailText, 2, 1)
 
 	genreText := view.NewText(view.TextConfig{}).SetText(t.TitleGenre)
 	flex.AddItem(genreText, 0, 1, false)
+	flex.ResizeItem(genreText, 2, 1)
 
 	descriptionText := view.NewText(view.TextConfig{}).SetText(t.TitleDescription)
 	flex.AddItem(descriptionText, 0, 1, false)
