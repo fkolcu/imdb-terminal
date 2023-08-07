@@ -2,6 +2,7 @@ package panel
 
 import (
 	"github.com/fkolcu/imdb-terminal/internal/view"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -36,19 +37,25 @@ func (t TitleDetailPanel) InitializeTabs() []PanelTab {
 	flex := tview.NewFlex()
 	flex.SetDirection(tview.FlexRow)
 
-	titleText := view.NewText(view.TextConfig{}).SetText(t.TitleName)
-	flex.AddItem(titleText, 0, 1, false)
-	flex.ResizeItem(titleText, 1, 1)
+	textConfig := view.TextConfig{Border: true, BorderColor: tcell.ColorPink, Alignment: tview.AlignCenter}
 
-	detailText := view.NewText(view.TextConfig{}).SetText(t.TitleDetail)
-	flex.AddItem(detailText, 0, 1, false)
-	flex.ResizeItem(detailText, 2, 1)
+	titleText := view.NewText(textConfig)
+	titleText.SetText(t.TitleName)
+	flex.AddItem(titleText, 3, 1, false)
 
-	genreText := view.NewText(view.TextConfig{}).SetText(t.TitleGenre)
-	flex.AddItem(genreText, 0, 1, false)
-	flex.ResizeItem(genreText, 2, 1)
+	detailText := view.NewText(textConfig)
+	detailText.SetText(t.TitleDetail)
+	flex.AddItem(detailText, 3, 1, false)
 
-	descriptionText := view.NewText(view.TextConfig{}).SetText(t.TitleDescription)
+	genreText := view.NewText(textConfig).SetText(t.TitleGenre)
+	flex.AddItem(genreText, 3, 1, false)
+
+	descriptionText := view.NewText(view.TextConfig{
+		Border:      true,
+		BorderColor: tcell.ColorPink,
+		Padding:     view.TextPadding{Left: 1},
+	})
+	descriptionText.SetText(t.TitleDescription)
 	flex.AddItem(descriptionText, 0, 1, false)
 
 	flexProperty := TabProperty{0, 2, 2, 2, 0, 0, false, false}
