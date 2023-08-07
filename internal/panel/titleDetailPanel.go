@@ -74,12 +74,11 @@ func (t TitleDetailPanel) InitializeTabs() []PanelTab {
 	linkButtonTab := PanelTab{linkButton, linkButtonProperty}
 
 	// Tab 5: Footer
-	keybindingText := view.NewText(view.TextConfig{DynamicColors: true, Padding: view.TextPadding{Left: 1, Right: 1}})
-	keybindingText.SetText("[blue]<esc>: Quit, <tab>: Jump between buttons, <enter>: Select button")
-	keybindingTextProperty := TabProperty{3, 0, 1, 4, 0, 0, false, false}
-	keybindingTextTab := PanelTab{keybindingText, keybindingTextProperty}
+	footer := view.NewFooter()
+	footerProperty := TabProperty{3, 0, 1, 4, 0, 0, false, false}
+	footerTab := PanelTab{footer, footerProperty}
 
-	titleDetailTabs = []PanelTab{imageTab, flexTab, backButtonTab, linkButtonTab, keybindingTextTab}
+	titleDetailTabs = []PanelTab{imageTab, flexTab, backButtonTab, linkButtonTab, footerTab}
 	return titleDetailTabs
 }
 

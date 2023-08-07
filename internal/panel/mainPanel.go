@@ -62,12 +62,11 @@ func (m MainPanel) InitializeTabs() []PanelTab {
 	personListTab := PanelTab{personList, personListProperty}
 
 	// Tab 4: Footer
-	keybindingText := view.NewText(view.TextConfig{DynamicColors: true, Padding: view.TextPadding{Left: 1, Right: 1}})
-	keybindingText.SetText("[blue]<esc>: Quit, <tab>: Jump between panels")
-	keybindingTextProperty := TabProperty{2, 0, 1, 2, 0, 0, false, false}
-	keybindingTextTab := PanelTab{keybindingText, keybindingTextProperty}
+	footer := view.NewFooter()
+	footerProperty := TabProperty{2, 0, 1, 2, 0, 0, false, false}
+	footerTab := PanelTab{footer, footerProperty}
 
-	mainTabs = []PanelTab{searchInputTab, titleListTab, personListTab, keybindingTextTab}
+	mainTabs = []PanelTab{searchInputTab, titleListTab, personListTab, footerTab}
 	return mainTabs
 }
 
