@@ -3,7 +3,6 @@ package scraping
 import (
 	"github.com/fkolcu/imdb-terminal/internal/util"
 	"golang.org/x/net/html"
-	"strings"
 )
 
 type ImdbTitleFoundItem struct {
@@ -87,7 +86,11 @@ func onTitleDetailFound(node *html.Node, data string) {
 			}
 			traverseTree(node.FirstChild, itemsToResolveForDetail)
 		} else {
-			titleFound.Detail = strings.Join([]string{titleFound.Detail, node.FirstChild.Data}, " - ")
+			if titleFound.Detail == "" {
+				titleFound.Detail = node.FirstChild.Data
+			} else {
+				titleFound.Detail += " - " + node.FirstChild.Data
+			}
 		}
 
 		node = node.NextSibling
