@@ -17,6 +17,7 @@ type TitleDetailPanel struct {
 	TitleGenre        string
 	TitleDescription  string
 	TitleMetadata     scraping.ImdbTitleMetadata
+	TitleRating       scraping.ImdbTitleRating
 	TitleUrl          string
 	OnGoBackSelected  func()
 	OnSeeImdbSelected func(url string)
@@ -39,19 +40,27 @@ func (t TitleDetailPanel) InitializeTabs() []PanelTab {
 	// Tab 2: Info
 	flex := tview.NewFlex()
 	flex.SetDirection(tview.FlexRow)
+	flex.SetBorderPadding(0, 1, 0, 0)
 
-	textConfig := view.TextConfig{Border: true, BorderColor: tcell.ColorPink, Alignment: tview.AlignCenter}
+	textConfig := view.TextConfig{Border: true, BorderColor: tcell.ColorPink, Padding: view.TextPadding{Left: 1}}
 
 	titleText := view.NewText(textConfig)
 	titleText.SetText(t.TitleName)
+	titleText.SetTextAlign(tview.AlignCenter)
+	titleText.SetBackgroundColor(tcell.ColorFireBrick)
 	flex.AddItem(titleText, 3, 1, false)
 
-	detailText := view.NewText(textConfig)
-	detailText.SetText(t.TitleDetail)
-	flex.AddItem(detailText, 3, 1, false)
+	presentationSection := tview.NewFlex()
+	presentationSection.SetDirection(tview.FlexColumn)
 
-	genreText := view.NewText(textConfig).SetText(t.TitleGenre)
-	flex.AddItem(genreText, 3, 1, false)
+	detailText := view.NewText(textConfig)
+	detailText.SetText(getDetailText(t))
+	presentationSection.AddItem(detailText, 0, 1, false)
+
+	ratingText := view.NewText(textConfig)
+	ratingText.SetText(getRatingText(t))
+	presentationSection.AddItem(ratingText, 0, 1, false)
+	flex.AddItem(presentationSection, 4, 1, false)
 
 	descriptionText := view.NewText(view.TextConfig{
 		Border:      true,
@@ -108,6 +117,29 @@ func (t TitleDetailPanel) InitializeTabs() []PanelTab {
 
 	titleDetailTabs = []PanelTab{imageTab, flexTab, backButtonTab, linkButtonTab, footerTab}
 	return titleDetailTabs
+}
+
+func getDetailText(t TitleDetailPanel) string {
+	var result string
+	if t.TitleDetail != "" {
+		result = t.TitleDetail + "\n"
+	}
+
+	result += t.TitleGenre
+
+	if result != "" {
+		return result
+	}
+
+	return "No details found"
+}
+
+func getRatingText(t TitleDetailPanel) string {
+	if t.TitleRating.RatingValue == "" {
+		return "No rating found"
+	} else {
+		return "⭐️ " + t.TitleRating.RatingValue + "/" + t.TitleRating.MaxValue + "\n\t" + t.TitleRating.TotalRatingNumber
+	}
 }
 
 func (t TitleDetailPanel) GetTabs() []PanelTab {

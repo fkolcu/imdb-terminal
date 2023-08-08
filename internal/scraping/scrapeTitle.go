@@ -12,6 +12,7 @@ type ImdbTitleFoundItem struct {
 	Genre       string
 	Description string
 	Metadata    ImdbTitleMetadata
+	Rating      ImdbTitleRating
 }
 
 type ImdbTitleMetadata struct {
@@ -20,9 +21,16 @@ type ImdbTitleMetadata struct {
 	Stars     []string
 }
 
+type ImdbTitleRating struct {
+	RatingValue       string
+	MaxValue          string
+	TotalRatingNumber string
+}
+
 var titleFound ImdbTitleFoundItem
 
 var hasMetadataBeenFound = false
+var hasRatingBeenFound = false
 
 func ViewImdbTitle(url string) ImdbTitleFoundItem {
 	titleFound = ImdbTitleFoundItem{}
@@ -30,6 +38,9 @@ func ViewImdbTitle(url string) ImdbTitleFoundItem {
 	// This needs to be reset everytime search is done
 	// since 2 metadata `ul` html tags are in IMDb, one for desktop view and other for mobile view
 	hasMetadataBeenFound = false
+
+	// Same as above for rating
+	hasRatingBeenFound = false
 
 	htmlTree := scrape(ImdbTitleScraper{Url: url})
 
@@ -63,6 +74,11 @@ func ViewImdbTitle(url string) ImdbTitleFoundItem {
 			Tag:     "ul",
 			Class:   "ipc-metadata-list ipc-metadata-list--dividers-all title-pc-list ipc-metadata-list--baseAlt",
 			OnFound: onMetaDataFound,
+		},
+		{
+			Tag:     "div",
+			Class:   "sc-bde20123-0 gtEgaf",
+			OnFound: onImdbRatingFound,
 		},
 	}
 
@@ -107,7 +123,7 @@ func onTitleDetailFound(node *html.Node, data string) {
 			if titleFound.Detail == "" {
 				titleFound.Detail = node.FirstChild.Data
 			} else {
-				titleFound.Detail += " - " + node.FirstChild.Data
+				titleFound.Detail += " | " + node.FirstChild.Data
 			}
 		}
 
@@ -119,7 +135,7 @@ func onTitleDetailFound(node *html.Node, data string) {
 
 	if node.Data == "a" {
 		if titleFound.Detail != "" {
-			data = titleFound.Detail + " - " + data
+			data = titleFound.Detail + " | " + data
 		}
 		titleFound.Detail = data
 		return
@@ -189,9 +205,43 @@ func onMetaDataItemFound(node *html.Node, data string) {
 	switch currentMetadataType {
 	case "Director", "Directors":
 		titleFound.Metadata.Directors = append(titleFound.Metadata.Directors, node.FirstChild.Data)
-	case "Writers":
+	case "Writers", "Creator":
 		titleFound.Metadata.Writers = append(titleFound.Metadata.Writers, node.FirstChild.Data)
 	case "Stars":
 		titleFound.Metadata.Stars = append(titleFound.Metadata.Stars, node.FirstChild.Data)
+	}
+}
+
+func onImdbRatingFound(node *html.Node, data string) {
+	if hasRatingBeenFound {
+		return
+	}
+
+	if node.Data == "span" && hasClass(node, "sc-bde20123-1 iZlgcd") {
+		titleFound.Rating.RatingValue = node.FirstChild.Data
+
+		if node.NextSibling != nil {
+			titleFound.Rating.MaxValue = node.NextSibling.LastChild.Data
+		}
+	}
+
+	if node.Data == "div" && hasClass(node, "sc-bde20123-3 bjjENQ") {
+		titleFound.Rating.TotalRatingNumber = node.FirstChild.Data
+		hasRatingBeenFound = true
+	}
+
+	if node.Data == "div" && hasClass(node, "sc-bde20123-0 gtEgaf") {
+		traverseTree(node, []ItemResolvingAttribute{
+			{
+				Tag:     "span",
+				Class:   "sc-bde20123-1 iZlgcd",
+				OnFound: onImdbRatingFound,
+			},
+			{
+				Tag:     "div",
+				Class:   "sc-bde20123-3 bjjENQ",
+				OnFound: onImdbRatingFound,
+			},
+		})
 	}
 }

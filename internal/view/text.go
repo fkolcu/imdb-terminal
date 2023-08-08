@@ -13,11 +13,12 @@ type TextPadding struct {
 }
 
 type TextConfig struct {
-	DynamicColors bool
-	Padding       TextPadding
-	Border        bool
-	BorderColor   tcell.Color
-	Alignment     int
+	DynamicColors   bool
+	Padding         TextPadding
+	Border          bool
+	BorderColor     tcell.Color
+	Alignment       int
+	BackgroundColor tcell.Color
 }
 
 func NewText(config TextConfig) *tview.TextView {
@@ -28,6 +29,8 @@ func NewText(config TextConfig) *tview.TextView {
 
 	myText.SetBorder(config.Border)
 	myText.SetBorderColor(config.BorderColor)
+
+	myText.SetBackgroundColor(config.BackgroundColor)
 
 	myText.SetTextAlign(config.Alignment)
 
