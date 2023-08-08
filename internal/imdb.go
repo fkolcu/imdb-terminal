@@ -23,6 +23,9 @@ type CliPages struct {
 
 	TitleDetailPage  *tview.Grid
 	TitleDetailPanel panel.Panel
+
+	PersonDetailPage  *tview.Grid
+	PersonDetailPanel panel.Panel
 }
 
 func NewCli(appGlobal *AppGlobal) CliPages {
@@ -48,6 +51,15 @@ func newTitlePage(titleDetailPanel panel.TitleDetailPanel) CliPages {
 	return CliPages{
 		TitleDetailPage:  titleDetailPage,
 		TitleDetailPanel: titleDetailPanel,
+	}
+}
+
+func newPersonPage(personDetailPanel panel.PersonDetailPanel) CliPages {
+	personDetailPage := panel.NewPanel(personDetailPanel.GetAttributes(), personDetailPanel.InitializeTabs())
+
+	return CliPages{
+		PersonDetailPage:  personDetailPage,
+		PersonDetailPanel: personDetailPanel,
 	}
 }
 
@@ -117,5 +129,22 @@ func onGoBackButtonSelected() {
 }
 
 func onPersonSelected(selectedIndex int) {
+	personUrl := peopleUrls[selectedIndex]
+	foundPerson := scraping.ViewImdbPerson(personUrl)
 
+	personDetailPanel := panel.PersonDetailPanel{
+		PersonName:        foundPerson.Name,
+		PersonPoster:      foundPerson.Poster,
+		PersonDetail:      foundPerson.Detail,
+		PersonDescription: foundPerson.Description,
+		PersonUrl:         personUrl,
+		OnSeeImdbSelected: onImdbButtonSelected,
+		OnGoBackSelected:  onGoBackButtonSelected,
+	}
+
+	p := newPersonPage(personDetailPanel)
+
+	global.ActivePanel = personDetailPanel
+	global.CliUiApp.SetRoot(p.PersonDetailPage, true)
+	ToggleFocus(global)
 }

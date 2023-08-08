@@ -68,6 +68,7 @@ func (t TitleDetailPanel) InitializeTabs() []PanelTab {
 		Padding:     view.TextPadding{Left: 1},
 	})
 	descriptionText.SetText(t.TitleDescription)
+	descriptionText.SetScrollable(true)
 	flex.AddItem(descriptionText, 0, 1, false)
 
 	metadataDirectors := view.NewText(textConfig)

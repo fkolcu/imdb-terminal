@@ -8,6 +8,7 @@ import (
 
 func main() {
 	app := tview.NewApplication()
+	app.EnableMouse(true)
 
 	appGlobal := &internal.AppGlobal{
 		CliUiApp: app,
