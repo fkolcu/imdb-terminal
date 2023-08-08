@@ -96,18 +96,33 @@ func resolveItems(node *html.Node, itemToResolve ItemResolvingAttribute) {
 		return
 	}
 
-	for _, attr := range node.Attr {
-		if attr.Key == "class" && strings.Contains(attr.Val, itemToResolve.Class) {
-			child := node.FirstChild
+	if hasClass(node, itemToResolve.Class) {
+		child := node.FirstChild
 
-			var data string
-			if child != nil {
-				data = child.Data
-			} else {
-				data = node.Data
+		var data string
+		if child != nil {
+			data = child.Data
+		} else {
+			data = node.Data
+		}
+
+		itemToResolve.OnFound(node, data)
+	}
+}
+
+type ScrapeNode struct {
+	*html.Node
+}
+
+func hasClass(node *html.Node, className string) bool {
+	for _, attribute := range node.Attr {
+		if attribute.Key == "class" {
+			if strings.Contains(attribute.Val, className) {
+				return true
 			}
-
-			itemToResolve.OnFound(node, data)
+			return false
 		}
 	}
+
+	return false
 }

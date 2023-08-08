@@ -11,12 +11,25 @@ type ImdbTitleFoundItem struct {
 	Detail      string
 	Genre       string
 	Description string
+	Metadata    ImdbTitleMetadata
+}
+
+type ImdbTitleMetadata struct {
+	Directors []string
+	Writers   []string
+	Stars     []string
 }
 
 var titleFound ImdbTitleFoundItem
 
+var hasMetadataBeenFound = false
+
 func ViewImdbTitle(url string) ImdbTitleFoundItem {
 	titleFound = ImdbTitleFoundItem{}
+
+	// This needs to be reset everytime search is done
+	// since 2 metadata `ul` html tags are in IMDb, one for desktop view and other for mobile view
+	hasMetadataBeenFound = false
 
 	htmlTree := scrape(ImdbTitleScraper{Url: url})
 
@@ -45,6 +58,11 @@ func ViewImdbTitle(url string) ImdbTitleFoundItem {
 			Tag:     "span",
 			Class:   "sc-466bb6c-2 eVLpWt",
 			OnFound: onTitleDescriptionFound,
+		},
+		{
+			Tag:     "ul",
+			Class:   "ipc-metadata-list ipc-metadata-list--dividers-all title-pc-list ipc-metadata-list--baseAlt",
+			OnFound: onMetaDataFound,
 		},
 	}
 
@@ -131,4 +149,49 @@ func onTitleGenreFound(node *html.Node, data string) {
 
 func onTitleDescriptionFound(node *html.Node, data string) {
 	titleFound.Description = data
+}
+
+var currentMetadataType string
+
+func onMetaDataFound(node *html.Node, data string) {
+	if hasMetadataBeenFound {
+		return
+	}
+
+	hasMetadataBeenFound = true
+
+	traverseTree(node, []ItemResolvingAttribute{
+		{
+			Tag:     "span",
+			Class:   "ipc-metadata-list-item__label ipc-metadata-list-item__label",
+			OnFound: onMetaDataTypeFound,
+		},
+		{
+			Tag:     "a",
+			Class:   "ipc-metadata-list-item__label ipc-metadata-list-item__label",
+			OnFound: onMetaDataTypeFound,
+		},
+		{
+			Tag:     "a",
+			Class:   "ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link",
+			OnFound: onMetaDataItemFound,
+		},
+	})
+}
+
+// onMetaDataTypeFound is part of onMetaDataFound
+func onMetaDataTypeFound(node *html.Node, data string) {
+	currentMetadataType = node.FirstChild.Data
+}
+
+// onMetaDataItemFound is part of onMetaDataFound
+func onMetaDataItemFound(node *html.Node, data string) {
+	switch currentMetadataType {
+	case "Director", "Directors":
+		titleFound.Metadata.Directors = append(titleFound.Metadata.Directors, node.FirstChild.Data)
+	case "Writers":
+		titleFound.Metadata.Writers = append(titleFound.Metadata.Writers, node.FirstChild.Data)
+	case "Stars":
+		titleFound.Metadata.Stars = append(titleFound.Metadata.Stars, node.FirstChild.Data)
+	}
 }

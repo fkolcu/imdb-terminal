@@ -1,9 +1,11 @@
 package panel
 
 import (
+	"github.com/fkolcu/imdb-terminal/internal/scraping"
 	"github.com/fkolcu/imdb-terminal/internal/view"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"strings"
 )
 
 var titleDetailTabs []PanelTab
@@ -14,6 +16,7 @@ type TitleDetailPanel struct {
 	TitleDetail       string
 	TitleGenre        string
 	TitleDescription  string
+	TitleMetadata     scraping.ImdbTitleMetadata
 	TitleUrl          string
 	OnGoBackSelected  func()
 	OnSeeImdbSelected func(url string)
@@ -57,6 +60,21 @@ func (t TitleDetailPanel) InitializeTabs() []PanelTab {
 	})
 	descriptionText.SetText(t.TitleDescription)
 	flex.AddItem(descriptionText, 0, 1, false)
+
+	metadataDirectors := view.NewText(textConfig)
+	metadataDirectors.SetText(strings.Join(t.TitleMetadata.Directors, ", "))
+	metadataDirectors.SetTitle("Director(s)").SetTitleAlign(tview.AlignLeft)
+	flex.AddItem(metadataDirectors, 3, 1, false)
+
+	metadataWriters := view.NewText(textConfig)
+	metadataWriters.SetText(strings.Join(t.TitleMetadata.Writers, ", "))
+	metadataWriters.SetTitle("Writers").SetTitleAlign(tview.AlignLeft)
+	flex.AddItem(metadataWriters, 3, 1, false)
+
+	metadataStars := view.NewText(textConfig)
+	metadataStars.SetText(strings.Join(t.TitleMetadata.Stars, ", "))
+	metadataStars.SetTitle("Stars").SetTitleAlign(tview.AlignLeft)
+	flex.AddItem(metadataStars, 3, 1, false)
 
 	flexProperty := TabProperty{0, 2, 2, 2, 0, 0, false, false}
 	flexTab := PanelTab{flex, flexProperty}

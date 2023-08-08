@@ -92,6 +92,7 @@ func onTitleSelected(selectedIndex int) {
 		TitleDetail:       foundTitle.Detail,
 		TitleGenre:        foundTitle.Genre,
 		TitleDescription:  foundTitle.Description,
+		TitleMetadata:     foundTitle.Metadata,
 		TitleUrl:          titleUrl,
 		OnSeeImdbSelected: onImdbButtonSelected,
 		OnGoBackSelected:  onGoBackButtonSelected,
